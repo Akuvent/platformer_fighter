@@ -73,33 +73,42 @@ func _physics_process(delta):
 
 
 func attack():
-	# Startup
 	attack_startup = true
 	velocity.x = 0
 	sprite.animation = "attack"
-	sprite.frame = 0 # Startup frame
+	sprite.frame = 0
 	sprite.pause()
-	for i in 2:  # 3 blinks during startup
+
+	# Blink until ready
+	for i in 2:
 		sprite.modulate = Color(1.5, 1.5, 1.5, 0.75)
 		await get_tree().create_timer(0.04).timeout
 		sprite.modulate = Color.WHITE
 		await get_tree().create_timer(0.04).timeout
-	# Ready blink
 	sprite.modulate = Color(2, 2, 2)
-	await get_tree().create_timer(0.16).timeout
+	await get_tree().create_timer(0.08).timeout
 	sprite.modulate = Color.WHITE
+	## Add ready SFX later in development
 	attack_startup = false
-	## Play sound attack ready later in development
 
-	# Active
+	# Released during startup -> cancel
+	if not Input.is_action_pressed("attack"):
+		recovery()
+		return
+
+	# Ready: wait for release
+	while Input.is_action_pressed("attack"):
+		await get_tree().process_frame
+		# optional: keep a “ready” pose / blink here
+
+	# Released -> active
 	attacking = true
 	sprite.play("attack")
 	attack_area.monitoring = true
-	await get_tree().create_timer(0.1).timeout  # active window
-	attacking = false
+	await get_tree().create_timer(0.1).timeout
 	attack_area.monitoring = false
+	attacking = false
 
-	# Recovery
 	recovery()
 
 
@@ -123,4 +132,13 @@ func heavy_attack():
 	recovery()
 
 func recovery(): # WIP
-	pass
+	return
+func play_impact_test() -> void:
+	var rect := get_tree().current_scene.get_node("VFX/ImpactRect") # adjust path
+	rect.visible = true
+	await get_tree().create_timer(0.05).timeout  # ~3 frames at 60fps
+	rect.visible = false
+	await get_tree().create_timer(0.025).timeout  # ~1.5 frames at 60fps
+	rect.visible = true
+	await get_tree().create_timer(0.05).timeout  # ~3 frames at 60fps
+	rect.visible = false
