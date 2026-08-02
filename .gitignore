@@ -4,3 +4,6 @@
 
 # Local auto-commit safety net (per-machine, not shared)
 .cursor-autocommit/
+
+# Portable chat export (local context only)
+docs/pixel-art-game-conversation-export.json

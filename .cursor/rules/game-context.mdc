@@ -1,0 +1,29 @@
+---
+description: Platformer Fighter product scope, milestone, and anti-creep rules
+alwaysApply: true
+---
+
+# Platformer Fighter
+
+Godot 4.6 GDScript Smash-like. Full brief: `AGENTS.md`.
+
+## Current milestone only
+
+Ship a **hit lab**: player move/jump + one attack, **brainless dummy**, **hitstop + anime impact frames** (blackout / invert / white silhouettes). No real AI.
+
+## Hard no (for now)
+
+- Multiplayer / netcode
+- Smart enemy AI, campaigns, rosters, items
+- Survival/crafting/hunger
+- Full Smash physics parity (DI, ledges, etc.)
+
+## Impact frame implementation
+
+- Fullscreen shader / `ColorRect` for invert or blackout (1–3 frames)
+- White silhouettes via fighter material overrides — **not** root-wide `modulate`
+- Save heavy frames for strong hits
+
+## Scope rule
+
+If a change doesn’t improve the solo hit fantasy or block the hit lab, cut it. Polish over features.
