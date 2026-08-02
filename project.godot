@@ -11,6 +11,7 @@ config_version=5
 [application]
 
 config/name="Platformer Fighter"
+run/main_scene="uid://beytduhwh3oe2"
 config/features=PackedStringArray("4.6", "Forward Plus")
 config/icon="res://icon.svg"
 
@@ -27,4 +28,10 @@ window/stretch/scale_mode="integer"
 
 [rendering]
 
+textures/canvas_textures/default_texture_filter=0
 rendering_device/driver.windows="d3d12"
+anti_aliasing/screen_space_roughness_limiter/enabled=false
+2d/snap/snap_2d_transforms_to_pixel=true
+2d/snap/snap_2d_vertices_to_pixel=true
+textures/stretch/scale_mode="integer"
+textures/stretch/mode="viewport"
