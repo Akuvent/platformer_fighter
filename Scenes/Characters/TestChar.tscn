@@ -7,7 +7,7 @@
 [ext_resource type="Texture2D" uid="uid://1ejolwsotwaf" path="res://Sprites/Characters/Player/Poses/player_walk2.png" id="5_ht2eg"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_o2jtb"]
-size = Vector2(24, 32)
+size = Vector2(15, 25)
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_uuh36"]
 animations = [{
@@ -47,10 +47,12 @@ animations = [{
 [node name="CharBody2D" type="CharacterBody2D" parent="." unique_id=1921459648]
 
 [node name="CharCollider" type="CollisionShape2D" parent="CharBody2D" unique_id=1928292087]
+position = Vector2(-0.5, 3.5)
 shape = SubResource("RectangleShape2D_o2jtb")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="CharBody2D" unique_id=1562151598]
+position = Vector2(0, -1.1097301e-06)
 scale = Vector2(0.29999998, 0.29090908)
 sprite_frames = SubResource("SpriteFrames_uuh36")
-animation = &"walk"
+animation = &"idle"
 autoplay = "idle"
