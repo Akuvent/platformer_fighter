@@ -1,8 +1,46 @@
 [gd_scene format=3 uid="uid://oylclvuboi8r"]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_o2jtb"]
+[ext_resource type="Texture2D" uid="uid://po81fedi5q8b" path="res://Sprites/Characters/Player/Poses/player_idle.png" id="1_422c8"]
+[ext_resource type="Texture2D" uid="uid://r8bnawdupmcp" path="res://Sprites/Characters/Player/Poses/player_jump.png" id="2_4jtsn"]
+[ext_resource type="Texture2D" uid="uid://ccqg10jvayqd4" path="res://Sprites/Characters/Player/Poses/player_fall.png" id="3_4voql"]
+[ext_resource type="Texture2D" uid="uid://cvvlvxwbgwrux" path="res://Sprites/Characters/Player/Poses/player_walk1.png" id="4_bqkxr"]
+[ext_resource type="Texture2D" uid="uid://1ejolwsotwaf" path="res://Sprites/Characters/Player/Poses/player_walk2.png" id="5_ht2eg"]
 
-[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_4axx0"]
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_o2jtb"]
+size = Vector2(24, 32)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_uuh36"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_422c8")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_4jtsn")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_4voql")
+}],
+"loop": true,
+"name": &"jump",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("4_bqkxr")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_ht2eg")
+}],
+"loop": true,
+"name": &"walk",
+"speed": 5.0
+}]
 
 [node name="Char" type="Node2D" unique_id=1471258696]
 
@@ -11,7 +49,8 @@
 [node name="CharCollider" type="CollisionShape2D" parent="CharBody2D" unique_id=1928292087]
 shape = SubResource("RectangleShape2D_o2jtb")
 
-[node name="CharSprite" type="Sprite2D" parent="CharBody2D" unique_id=1016698589]
-position = Vector2(-9.999999, -9.999999)
-scale = Vector2(20, 20)
-texture = SubResource("PlaceholderTexture2D_4axx0")
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="CharBody2D" unique_id=1562151598]
+scale = Vector2(0.29999998, 0.29090908)
+sprite_frames = SubResource("SpriteFrames_uuh36")
+animation = &"walk"
+autoplay = "idle"
