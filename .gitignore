@@ -1,0 +1,6 @@
+# Godot 4+ specific ignores
+.godot/
+/android/
+
+# Local auto-commit safety net (per-machine, not shared)
+.cursor-autocommit/
