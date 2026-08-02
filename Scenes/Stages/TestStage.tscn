@@ -1,7 +1,7 @@
 [gd_scene format=4 uid="uid://beytduhwh3oe2"]
 
 [ext_resource type="Texture2D" uid="uid://d0daxtpm3iwn2" path="res://Sprites/Stages/Spritesheets/spritesheet-tiles-default.png" id="1_ju2k6"]
-[ext_resource type="PackedScene" uid="uid://oylclvuboi8r" path="res://Scenes/Characters/TestChar.tscn" id="2_dwe7a"]
+[ext_resource type="PackedScene" uid="uid://oylclvuboi8r" path="res://Scenes/Characters/Player.tscn" id="2_dwe7a"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_to801"]
 texture = ExtResource("1_ju2k6")
@@ -341,12 +341,11 @@ sources/1 = SubResource("TileSetAtlasSource_to801")
 [node name="Main" type="Node2D" unique_id=98644828]
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1286583008]
-anchor_mode = 0
 
 [node name="TileMapLayer" type="TileMapLayer" parent="." unique_id=708001444]
 scale = Vector2(0.25, 0.25)
-tile_map_data = PackedByteArray("AAAMAAsAAQALAAkAAAAHAAsAAQAMAAkAAAARAAsAAQANAAkAAAAQAAsAAQALAAkAAAAPAAsAAQALAAkAAAAOAAsAAQALAAkAAAANAAsAAQALAAkAAAALAAsAAQALAAkAAAAKAAsAAQALAAkAAAAJAAsAAQALAAkAAAAIAAsAAQALAAkAAAAHAAwAAQAGAAkAAAARAAwAAQAHAAkAAAAQAAwAAQAFAAkAAAAPAAwAAQAFAAkAAAAOAAwAAQAFAAkAAAANAAwAAQAFAAkAAAAMAAwAAQAFAAkAAAALAAwAAQAFAAkAAAAKAAwAAQAFAAkAAAAJAAwAAQAFAAkAAAAIAAwAAQAFAAkAAAA=")
+tile_map_data = PackedByteArray("AAAFAAAAAQANAAkAAAD6/wAAAQAMAAkAAAAFAAEAAQAHAAkAAAD6/wEAAQAGAAkAAAD7/wAAAQALAAkAAAD8/wAAAQALAAkAAAD9/wAAAQALAAkAAAD+/wAAAQALAAkAAAD//wAAAQALAAkAAAAAAAAAAQALAAkAAAABAAAAAQALAAkAAAACAAAAAQALAAkAAAADAAAAAQALAAkAAAAEAAAAAQALAAkAAAAEAAEAAQAFAAkAAAADAAEAAQAFAAkAAAACAAEAAQAFAAkAAAABAAEAAQAFAAkAAAAAAAEAAQAFAAkAAAD//wEAAQAFAAkAAAD+/wEAAQAFAAkAAAD9/wEAAQAFAAkAAAD8/wEAAQAFAAkAAAD7/wEAAQAFAAkAAAA=")
 tile_set = SubResource("TileSet_qh2p7")
 
 [node name="Char" parent="." unique_id=1471258696 instance=ExtResource("2_dwe7a")]
-position = Vector2(160, 160)
+position = Vector2(0, -16)
