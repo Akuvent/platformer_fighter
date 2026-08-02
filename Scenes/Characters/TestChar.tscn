@@ -43,17 +43,15 @@ animations = [{
 "speed": 5.0
 }]
 
-[node name="Char" type="Node2D" unique_id=1471258696]
+[node name="CharBody2D" type="CharacterBody2D" unique_id=1921459648]
+collision_layer = 2
 script = ExtResource("1_4jtsn")
 
-[node name="CharBody2D" type="CharacterBody2D" parent="." unique_id=1921459648]
-collision_layer = 2
-
-[node name="CharCollider" type="CollisionShape2D" parent="CharBody2D" unique_id=1928292087]
+[node name="CharCollider" type="CollisionShape2D" parent="." unique_id=1928292087]
 position = Vector2(-0.5, 3.5)
 shape = SubResource("RectangleShape2D_o2jtb")
 
-[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="CharBody2D" unique_id=1562151598]
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1562151598]
 position = Vector2(0, -1.1097301e-06)
 scale = Vector2(0.29999998, 0.29090908)
 sprite_frames = SubResource("SpriteFrames_uuh36")
