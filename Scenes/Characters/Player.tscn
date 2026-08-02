@@ -43,17 +43,29 @@ animations = [{
 "speed": 5.0
 }]
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_gc10f"]
+size = Vector2(9, 16)
+
 [node name="CharBody2D" type="CharacterBody2D" unique_id=1921459648]
 collision_layer = 2
+collision_mask = 5
 script = ExtResource("1_4jtsn")
 
 [node name="CharCollider" type="CollisionShape2D" parent="." unique_id=1928292087]
 position = Vector2(-0.5, 3.5)
 shape = SubResource("RectangleShape2D_o2jtb")
 
-[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1562151598]
+[node name="CharSprite2D" type="AnimatedSprite2D" parent="." unique_id=1562151598]
 position = Vector2(0, -1.1097301e-06)
 scale = Vector2(0.29999998, 0.29090908)
 sprite_frames = SubResource("SpriteFrames_uuh36")
 animation = &"jump"
 autoplay = "idle"
+
+[node name="AttackArea" type="Area2D" parent="." unique_id=1197656812]
+collision_layer = 4
+collision_mask = 8
+
+[node name="AttackAreaCollider" type="CollisionShape2D" parent="AttackArea" unique_id=1178815787]
+position = Vector2(12.5, 3)
+shape = SubResource("RectangleShape2D_gc10f")
