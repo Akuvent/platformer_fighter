@@ -3,6 +3,7 @@
 [ext_resource type="Texture2D" uid="uid://d0daxtpm3iwn2" path="res://Sprites/Stages/Spritesheets/spritesheet-tiles-default.png" id="1_ju2k6"]
 [ext_resource type="PackedScene" uid="uid://oylclvuboi8r" path="res://Scenes/Characters/Player.tscn" id="2_dwe7a"]
 [ext_resource type="Shader" uid="uid://3yy7jdbo4mgu" path="res://Resources/Combat/impact_outline.gdshader" id="3_dwe7a"]
+[ext_resource type="PackedScene" uid="uid://cluf2s1iup6nj" path="res://Scenes/Characters/Dummy.tscn" id="4_qh2p7"]
 [ext_resource type="Script" uid="uid://di5j8jxpi0om6" path="res://Scripts/Stages/world_boundary.gd" id="4_to801"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_to801"]
@@ -433,6 +434,9 @@ script = ExtResource("4_to801")
 [node name="WorldBoundaryCollider" type="CollisionShape2D" parent="Boundaries/WorldBoundary4" unique_id=1102624044]
 position = Vector2(450, 14)
 shape = SubResource("RectangleShape2D_exoxh")
+
+[node name="Dummy" parent="." unique_id=1968849694 instance=ExtResource("4_qh2p7")]
+position = Vector2(89, 4)
 
 [connection signal="body_entered" from="Boundaries/WorldBoundary" to="Boundaries/WorldBoundary" method="_on_body_entered"]
 [connection signal="body_entered" from="Boundaries/WorldBoundary2" to="Boundaries/WorldBoundary2" method="_on_body_entered"]

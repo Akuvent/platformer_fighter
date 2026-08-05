@@ -21,7 +21,14 @@ var hit = false
 
 
 func _ready():
-	attack_area.monitoring = false
+	set_attack_hitbox_active(false)
+
+
+func set_attack_hitbox_active(active: bool) -> void:
+	# Dummy HurtBox listens via area_entered, so it needs monitorable —
+	# monitoring alone only affects AttackArea detecting others.
+	attack_area.monitoring = active
+	attack_area.monitorable = active
 
 func _physics_process(delta):
 	if not (stunned or attacking): # No movement + gravity while in active part of attack
@@ -113,9 +120,9 @@ func attack():
 	sprite.animation = "attack"
 	sprite.frame = 1
 	sprite.pause()
-	attack_area.monitoring = true
+	set_attack_hitbox_active(true)
 	await get_tree().create_timer(0.1).timeout
-	attack_area.monitoring = false
+	set_attack_hitbox_active(false)
 	attacking = false
 	if hit == true:
 		jump_charge_left += 1
@@ -142,6 +149,7 @@ func heavy_attack():
 
 	# Released during startup -> cancel
 	if not Input.is_action_pressed("heavy_attack"):
+		attack_startup = false
 		return
 
 	# Ready: wait for release
@@ -155,11 +163,15 @@ func heavy_attack():
 	sprite.animation = "heavy_attack"
 	sprite.frame = 1
 	sprite.pause()
-	attack_area.monitoring = true
+	set_attack_hitbox_active(true)
 	await get_tree().create_timer(0.1).timeout
-	attack_area.monitoring = false
+	set_attack_hitbox_active(false)
 	attacking = false
 
 
 func die():
 	get_tree().reload_current_scene()
+
+
+func _on_hurt_box_area_entered(area):
+	pass # Replace with function body.

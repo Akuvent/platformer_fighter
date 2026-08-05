@@ -1,0 +1,30 @@
+[gd_scene format=3 uid="uid://cluf2s1iup6nj"]
+
+[ext_resource type="Texture2D" uid="uid://bpcpsb35rvfex" path="res://Sprites/Enemies/Default/slime_block_rest.png" id="1_ajtn3"]
+[ext_resource type="Script" uid="uid://b7bcdv2ipx2j3" path="res://Scripts/Characters/dummy.gd" id="1_sggwt"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_sggwt"]
+size = Vector2(24, 24)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_jbil5"]
+size = Vector2(24, 24)
+
+[node name="Dummy" type="CharacterBody2D" unique_id=1968849694]
+script = ExtResource("1_sggwt")
+
+[node name="DummySprite" type="Sprite2D" parent="." unique_id=1327183081]
+position = Vector2(-5.364418e-07, -1.9999994)
+scale = Vector2(0.43749997, 0.43750006)
+texture = ExtResource("1_ajtn3")
+
+[node name="DummyCollision" type="CollisionShape2D" parent="." unique_id=1963609646]
+shape = SubResource("RectangleShape2D_sggwt")
+
+[node name="HurtBox" type="Area2D" parent="." unique_id=91973864]
+collision_layer = 8
+collision_mask = 4
+
+[node name="HurtBoxCollision" type="CollisionShape2D" parent="HurtBox" unique_id=1125040097]
+shape = SubResource("RectangleShape2D_jbil5")
+
+[connection signal="area_entered" from="HurtBox" to="." method="_on_hurt_box_area_entered"]
