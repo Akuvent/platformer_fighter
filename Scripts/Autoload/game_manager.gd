@@ -1,18 +1,14 @@
 extends Node
 
 
-# Called when the node enters the scene tree for the first time.
-func _ready():
-	pass # Replace with function body.
-
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta):
-	pass
-
-
 func play_impact() -> void:
-	var rect := get_tree().current_scene.get_node("VFX/ImpactRect") # adjust path
+	var scene := get_tree().current_scene
+	if scene == null:
+		return
+	var rect := scene.get_node_or_null("VFX/ImpactRect") as CanvasItem
+	if rect == null:
+		return
+
 	rect.visible = true
 	await get_tree().create_timer(0.05).timeout  # ~3 frames at 60fps
 	rect.visible = false
