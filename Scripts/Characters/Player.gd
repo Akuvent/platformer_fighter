@@ -1,6 +1,6 @@
 extends CharacterBody2D
 
-# --- Movement ---
+#region Movement vars
 const SPEED = 150
 const JUMP_VELOCITY = -350.0
 @export var jump_charge := 1
@@ -9,35 +9,38 @@ var jump_charge_left = 0
 # Coyote time
 @export var coyote_time := 0.1
 var coyote_timer := 0.0
+#endregion
 
-# --- Combat state ---
+#region Combat state
 enum AttackKind { LIGHT, HEAVY }
 
 var stunned := false
 var attacking := false
 var attack_startup := false
 var current_attack_kind: AttackKind = AttackKind.LIGHT
+#endregion
 
+#region Node refs
 @onready var attack_area = $AttackArea
 @onready var attack_collider = $AttackArea/AttackAreaCollider
 @onready var sprite = $CharSprite2D
 
 var facing_right := true
 var _attack_collider_x := 0.0
+#endregion
 
 
+#region Lifecycle
 func _ready():
 	_attack_collider_x = absf(attack_collider.position.x)
 	set_attack_hitbox_active(false)
 	_apply_facing()
 
 
-# --- Physics / input ---
 func _physics_process(delta):
 	if not (stunned or attacking): # No movement + gravity while in active part of attack
 		# Gravity
-		if not is_on_floor():
-			velocity += get_gravity() * delta
+		_apply_gravity(delta)
 
 		if not attack_startup: # No movement while preparing an attack
 			# Attacks
@@ -45,25 +48,10 @@ func _physics_process(delta):
 				attack()
 			if Input.is_action_just_pressed("heavy_attack"):
 				heavy_attack()
-
 			# Jump + coyote time
-			if not is_on_floor():
-				coyote_timer = coyote_timer - delta
-			if Input.is_action_just_pressed("jump"):
-				if is_on_floor() or coyote_timer > 0:
-					velocity.y = JUMP_VELOCITY
-					coyote_timer = 0  # Prevents unwanted double jump
-				elif jump_charge_left > 0:
-					velocity.y = JUMP_VELOCITY
-					jump_charge_left -= 1
+			_handle_jump(delta)
 			# Horizontal movement
-			var direction = Input.get_axis("move_left", "move_right")
-			if direction and stunned == false:
-				velocity.x = direction * SPEED
-				facing_right = direction > 0
-				_apply_facing()
-			else:
-				velocity.x = move_toward(velocity.x, 0, SPEED)
+			_handle_move(delta)
 		else:
 			# Startup locks horizontal control; clear leftover run speed from held A/D
 			velocity.x = 0
@@ -72,32 +60,76 @@ func _physics_process(delta):
 
 	# --- Anims ---
 	if not (attacking or attack_startup): # Stop anims while attacking
-		if not is_on_floor() and velocity.y >= 0:
-			sprite.animation = "jump"
-			sprite.frame = 1  # Fall frame
-			sprite.pause()
-		elif not is_on_floor():
-			sprite.animation = "jump"
-			sprite.frame = 0  # Jump frame
-			sprite.pause()
-		elif is_on_floor() and velocity.x != 0:
-			sprite.play("walk")
-		else:
-			sprite.play("idle")
+		_update_anims()
 
 	# Refresh coyote time while grounded
 	if is_on_floor():
 		coyote_timer = coyote_time
 		jump_charge_left = jump_charge
+#endregion
 
 
-# --- Attack flow ---
+#region Movement
+func _apply_gravity(delta):
+	if not is_on_floor():
+		velocity += get_gravity() * delta
+
+
+func _handle_jump(delta):
+	if not is_on_floor():
+		coyote_timer = coyote_timer - delta
+	if Input.is_action_just_pressed("jump"):
+		if is_on_floor() or coyote_timer > 0:
+			velocity.y = JUMP_VELOCITY
+			coyote_timer = 0  # Prevents unwanted double jump
+		elif jump_charge_left > 0:
+			velocity.y = JUMP_VELOCITY
+			jump_charge_left -= 1
+
+
+func _handle_move(delta):
+	var direction = Input.get_axis("move_left", "move_right")
+	if direction and stunned == false:
+		velocity.x = direction * SPEED
+		facing_right = direction > 0
+		_apply_facing()
+	else:
+		velocity.x = move_toward(velocity.x, 0, SPEED)
+
+
+func _apply_facing() -> void:
+	# flip_h only mirrors the texture; move the hitbox to match facing.
+	sprite.flip_h = not facing_right
+	attack_collider.position.x = _attack_collider_x if facing_right else -_attack_collider_x
+#endregion
+
+
+#region Animation
+func _update_anims() -> void:
+	if not is_on_floor():
+		if velocity.y >= 0:
+			_set_anim(&"fall_anim")
+		else:
+			_set_anim(&"jump_anim")
+	elif absf(velocity.x) > 0.1:
+		_set_anim(&"walk_anim")
+	else:
+		_set_anim(&"idle_anim")
+
+
+func _set_anim(anim_name: StringName) -> void:
+	if sprite.animation != anim_name:
+		sprite.play(anim_name)
+#endregion
+
+
+#region Attack flow
 func attack():
-	await start_attack(AttackKind.LIGHT, &"attack", &"attack")
+	await start_attack(AttackKind.LIGHT, &"attack", &"attack_anim")
 
 
 func heavy_attack():
-	await start_attack(AttackKind.HEAVY, &"heavy_attack", &"heavy_attack")
+	await start_attack(AttackKind.HEAVY, &"heavy_attack", &"heavy_attack_anim")
 
 
 func start_attack(kind: AttackKind, action: StringName, anim: StringName) -> void:
@@ -139,12 +171,6 @@ func set_attack_hitbox_active(active: bool) -> void:
 	attack_area.set_deferred("monitorable", active)
 
 
-func _apply_facing() -> void:
-	# flip_h only mirrors the texture; move the hitbox to match facing.
-	sprite.flip_h = not facing_right
-	attack_collider.position.x = _attack_collider_x if facing_right else -_attack_collider_x
-
-
 func _play_attack_startup_blink(kind: AttackKind) -> void:
 	# Light ~0.14s, heavy ~0.24s telegraph before hold-to-release.
 	var blinks := 1 if kind == AttackKind.LIGHT else 2
@@ -164,9 +190,10 @@ func _play_attack_startup_blink(kind: AttackKind) -> void:
 func _cancel_attack_startup() -> void:
 	attack_startup = false
 	set_attack_hitbox_active(false)
+#endregion
 
 
-# --- Hit callbacks ---
+#region Hit / death
 # Dummy owns taking damage; attacker owns juice on connect.
 func notify_attack_landed(victim: Node = null) -> void:
 	set_attack_hitbox_active(false)
@@ -179,5 +206,5 @@ func notify_attack_landed(victim: Node = null) -> void:
 
 
 func die():
-	# Scene reload removes CollisionObjects; can't do that mid physics callback.
 	get_tree().call_deferred("reload_current_scene")
+#endregion

@@ -8,6 +8,7 @@
 [ext_resource type="Texture2D" uid="uid://o3qvl8muyd1y" path="res://Sprites/Characters/Player/Poses/player_action2.png" id="3_meglp"]
 [ext_resource type="Texture2D" uid="uid://cvvlvxwbgwrux" path="res://Sprites/Characters/Player/Poses/player_walk1.png" id="4_bqkxr"]
 [ext_resource type="Texture2D" uid="uid://1ejolwsotwaf" path="res://Sprites/Characters/Player/Poses/player_walk2.png" id="5_ht2eg"]
+[ext_resource type="Texture2D" uid="uid://c6imh5hkbhtyx" path="res://Sprites/Characters/Player/Poses/player_stand.png" id="6_meglp"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_o2jtb"]
 size = Vector2(15, 25)
@@ -22,8 +23,16 @@ animations = [{
 "texture": ExtResource("3_meglp")
 }],
 "loop": true,
-"name": &"attack",
+"name": &"attack_anim",
 "speed": 1.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("3_4voql")
+}],
+"loop": true,
+"name": &"fall_anim",
+"speed": 5.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -33,26 +42,26 @@ animations = [{
 "texture": ExtResource("3_meglp")
 }],
 "loop": true,
-"name": &"heavy_attack",
+"name": &"heavy_attack_anim",
 "speed": 1.0
 }, {
 "frames": [{
 "duration": 1.0,
 "texture": ExtResource("1_422c8")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_meglp")
 }],
 "loop": true,
-"name": &"idle",
-"speed": 5.0
+"name": &"idle_anim",
+"speed": 1.0
 }, {
 "frames": [{
 "duration": 1.0,
 "texture": ExtResource("2_4jtsn")
-}, {
-"duration": 1.0,
-"texture": ExtResource("3_4voql")
 }],
 "loop": true,
-"name": &"jump",
+"name": &"jump_anim",
 "speed": 5.0
 }, {
 "frames": [{
@@ -63,12 +72,15 @@ animations = [{
 "texture": ExtResource("5_ht2eg")
 }],
 "loop": true,
-"name": &"walk",
+"name": &"walk_anim",
 "speed": 5.0
 }]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_gc10f"]
 size = Vector2(25, 16)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_w38he"]
+size = Vector2(15, 25)
 
 [node name="CharBody2D" type="CharacterBody2D" unique_id=1921459648]
 collision_layer = 2
@@ -83,8 +95,8 @@ shape = SubResource("RectangleShape2D_o2jtb")
 position = Vector2(0, -1.1097301e-06)
 scale = Vector2(0.29999998, 0.29090908)
 sprite_frames = SubResource("SpriteFrames_uuh36")
-animation = &"walk"
-autoplay = "idle"
+animation = &"jump_anim"
+autoplay = "idle_anim"
 
 [node name="AttackArea" type="Area2D" parent="." unique_id=1197656812]
 collision_layer = 4
@@ -100,4 +112,4 @@ collision_mask = 4
 
 [node name="HurtBoxCollision" type="CollisionShape2D" parent="HurtBox" unique_id=1799402650]
 position = Vector2(-0.5, 3.5)
-shape = SubResource("RectangleShape2D_o2jtb")
+shape = SubResource("RectangleShape2D_w38he")
