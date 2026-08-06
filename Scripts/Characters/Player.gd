@@ -39,6 +39,7 @@ var move_lock_timer := 0.0
 var current_attack_kind: AttackKind = AttackKind.LIGHT
 var current_hit: HitData
 var total_damage := 0.0
+var hit_lock := false
 #endregion
 
 
@@ -259,6 +260,7 @@ func _wait_attack_hold_release(action: StringName, attack_id: int) -> bool:
 
 func _fill_current_hit(kind: AttackKind) -> void:
 	current_hit = HitData.new()
+	hit_lock = false
 	if kind == AttackKind.LIGHT:
 		current_hit.damage = 3.0
 		current_hit.attack_power = 1.0
@@ -274,18 +276,18 @@ func _end_attack_active() -> void:
 	_aerial_attack_hover = false
 
 
-func set_attack_hitbox_active(active: bool) -> void:
+func set_attack_hitbox_active(state: bool) -> void:
 	# Dummy HurtBox listens via area_entered, so it needs monitorable -
 	# monitoring alone only affects AttackArea detecting others.
 	# Must be deferred: toggling during area_entered is blocked by PhysicsServer2D.
-	attack_area.set_deferred("monitoring", active)
-	attack_area.set_deferred("monitorable", active)
+	attack_area.set_deferred("monitoring", state)
+	attack_area.set_deferred("monitorable", state)
 
 
 func _play_attack_startup_blink(kind: AttackKind) -> void:
 	# Light ~0.14s, heavy ~0.24s telegraph before hold-to-release.
-	var blinks := 1 if kind == AttackKind.LIGHT else 2
-	var attack_ready := 0.06 if kind == AttackKind.LIGHT else 0.08
+	var blinks := 1 if kind == AttackKind.LIGHT else 4
+	var attack_ready := 0.06 if kind == AttackKind.LIGHT else 0.16
 
 	for i in blinks:
 		sprite.modulate = Color(1.5, 1.5, 1.5, 0.75)
@@ -301,8 +303,9 @@ func _play_attack_startup_blink(kind: AttackKind) -> void:
 
 #region Hit / death
 func notify_attack_landed(victim: Node = null) -> void:
-	if current_hit == null or victim == null or victim == self:
+	if hit_lock or current_hit == null or victim == null or victim == self:
 		return
+	hit_lock = true
 	set_attack_hitbox_active(false)
 	if victim.has_method("hurt"):
 		victim.hurt(current_hit, global_position.x)
