@@ -3,7 +3,6 @@
 [ext_resource type="Texture2D" uid="uid://d0daxtpm3iwn2" path="res://Sprites/Stages/Spritesheets/spritesheet-tiles-default.png" id="1_ju2k6"]
 [ext_resource type="PackedScene" uid="uid://oylclvuboi8r" path="res://Scenes/Characters/Player.tscn" id="2_dwe7a"]
 [ext_resource type="Shader" uid="uid://3yy7jdbo4mgu" path="res://Resources/Combat/impact_outline.gdshader" id="3_dwe7a"]
-[ext_resource type="PackedScene" uid="uid://cluf2s1iup6nj" path="res://Scenes/Characters/Dummy.tscn" id="4_qh2p7"]
 [ext_resource type="Script" uid="uid://di5j8jxpi0om6" path="res://Scripts/Stages/world_boundary.gd" id="4_to801"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_to801"]
@@ -382,9 +381,6 @@ scale = Vector2(0.25, 0.25)
 tile_map_data = PackedByteArray("AAD5/wEAAQAMAAkAAAAGAAEAAQANAAkAAAAFAAEAAQALAAkAAAAEAAEAAQALAAkAAAADAAEAAQALAAkAAAACAAEAAQALAAkAAAABAAEAAQALAAkAAAAAAAEAAQALAAkAAAD//wEAAQALAAkAAAD+/wEAAQALAAkAAAD9/wEAAQALAAkAAAD8/wEAAQALAAkAAAD7/wEAAQALAAkAAAD6/wEAAQALAAkAAAD5/wMAAQAGAAkAAAAGAAMAAQAHAAkAAAD6/wIAAQAIAAkAAAD7/wIAAQAIAAkAAAD8/wIAAQAIAAkAAAD9/wIAAQAIAAkAAAD+/wIAAQAIAAkAAAD//wIAAQAIAAkAAAAAAAIAAQAIAAkAAAABAAIAAQAIAAkAAAACAAIAAQAIAAkAAAADAAIAAQAIAAkAAAAEAAIAAQAIAAkAAAAFAAIAAQAIAAkAAAD5/wIAAQAJAAkAAAAGAAIAAQAKAAkAAAD6/wMAAQAFAAkAAAD7/wMAAQAFAAkAAAD8/wMAAQAFAAkAAAD9/wMAAQAFAAkAAAD+/wMAAQAFAAkAAAD//wMAAQAFAAkAAAAAAAMAAQAFAAkAAAABAAMAAQAFAAkAAAACAAMAAQAFAAkAAAADAAMAAQAFAAkAAAAEAAMAAQAFAAkAAAAFAAMAAQAFAAkAAAD3//3/AQAQAAkAAAD4//3/AQARAAkAAAD5//3/AQARAAkAAAD6//3/AQAAAAoAAAAIAP3/AQAAAAoAAAAFAP3/AQAQAAkAAAAGAP3/AQARAAkAAAAHAP3/AQARAAkAAAA=")
 tile_set = SubResource("TileSet_qh2p7")
 
-[node name="Char" parent="." unique_id=1471258696 instance=ExtResource("2_dwe7a")]
-position = Vector2(-102, 0)
-
 [node name="VFX" type="CanvasLayer" parent="." unique_id=536899156]
 
 [node name="ImpactRect" type="ColorRect" parent="VFX" unique_id=2034296110]
@@ -435,8 +431,16 @@ script = ExtResource("4_to801")
 position = Vector2(450, 14)
 shape = SubResource("RectangleShape2D_exoxh")
 
-[node name="Dummy" parent="." unique_id=1968849694 instance=ExtResource("4_qh2p7")]
-position = Vector2(89, 4)
+[node name="CharBody2D" parent="." unique_id=1921459648 instance=ExtResource("2_dwe7a")]
+position = Vector2(-101, -1)
+
+[node name="CharBody2D2" parent="." unique_id=157189824 instance=ExtResource("2_dwe7a")]
+position = Vector2(96, -1)
+action_move_left = &"p2_move_left"
+action_move_right = &"p2_move_right"
+action_jump = &"p2_jump"
+action_attack = &"p2_attack"
+action_heavy_attack = &"p2_heavy_attack"
 
 [connection signal="body_entered" from="Boundaries/WorldBoundary" to="Boundaries/WorldBoundary" method="_on_body_entered"]
 [connection signal="body_entered" from="Boundaries/WorldBoundary2" to="Boundaries/WorldBoundary2" method="_on_body_entered"]

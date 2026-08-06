@@ -10,6 +10,8 @@ size = Vector2(24, 24)
 size = Vector2(24, 24)
 
 [node name="Dummy" type="CharacterBody2D" unique_id=1968849694]
+collision_layer = 2
+collision_mask = 1
 script = ExtResource("1_sggwt")
 
 [node name="DummySprite" type="Sprite2D" parent="." unique_id=1327183081]
