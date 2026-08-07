@@ -2,6 +2,10 @@ extends Node
 
 const P1_MAX_HEALTH = 3
 const P2_MAX_HEALTH = 3
+## Display frames via process_frame (not create_timer — arg order makes ignore_time_scale easy to get wrong).
+const IMPACT_INVERT_FRAMES := 5
+const IMPACT_BLACKOUT_FRAMES := 5
+const IMPACT_TIME_SCALE := 0.05
 
 var p1_health_anim: AnimatedSprite2D
 var p2_health_anim: AnimatedSprite2D
@@ -9,6 +13,7 @@ var p1_health := 0
 var p2_health := 0
 var p1_total_damage : Label
 var p2_total_damage : Label
+var _impact_playing := false
 
 func _ready() -> void:
 	call_deferred("_init_health_ui")
@@ -78,6 +83,8 @@ func _reload_stage() -> void:
 
 
 func play_impact() -> void:
+	if _impact_playing:
+		return
 	var scene := get_tree().current_scene
 	if scene == null:
 		return
@@ -85,10 +92,39 @@ func play_impact() -> void:
 	if rect == null:
 		return
 
+	_impact_playing = true
+	var mat := rect.material as ShaderMaterial
+	var cam := scene.get_node_or_null("Camera2D") as Camera2D
+	var base_zoom := Vector2.ONE
+	if cam:
+		base_zoom = cam.zoom
+		cam.zoom = base_zoom * 1.06
+
+	Engine.time_scale = IMPACT_TIME_SCALE
+	if mat:
+		mat.set_shader_parameter("style", 1)
+	# Warm up screen_texture while invisible — first visible frame is often garbage.
+	rect.modulate.a = 0.0
 	rect.visible = true
-	await get_tree().create_timer(0.05).timeout  # ~3 frames at 60fps
+	await get_tree().process_frame
+	rect.modulate.a = 1.0
+	await _wait_frames(IMPACT_INVERT_FRAMES)
+
+	if mat:
+		mat.set_shader_parameter("style", 2)
+		mat.set_shader_parameter("scratch_seed", randf() * 1000.0)
+	await _wait_frames(IMPACT_BLACKOUT_FRAMES)
+
 	rect.visible = false
-	await get_tree().create_timer(0.025).timeout  # ~1.5 frames at 60fps
-	rect.visible = true
-	await get_tree().create_timer(0.05).timeout  # ~3 frames at 60fps
-	rect.visible = false
+	rect.modulate.a = 1.0
+	Engine.time_scale = 1.0
+	if mat:
+		mat.set_shader_parameter("style", 1)
+	if cam:
+		cam.zoom = base_zoom
+	_impact_playing = false
+
+
+func _wait_frames(frames: int) -> void:
+	for i in maxi(frames, 1):
+		await get_tree().process_frame

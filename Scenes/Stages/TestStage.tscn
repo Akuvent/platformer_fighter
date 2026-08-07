@@ -361,8 +361,10 @@ sources/1 = SubResource("TileSetAtlasSource_to801")
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ju2k6"]
 shader = ExtResource("3_dwe7a")
-shader_parameter/threshold = 1.0
-shader_parameter/line_strength = 4.0
+shader_parameter/style = 1
+shader_parameter/threshold = 0.15
+shader_parameter/line_strength = 2.0
+shader_parameter/scratch_seed = 0.0
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_qh2p7"]
 size = Vector2(125, 675.5)
