@@ -14,6 +14,8 @@ var jump_charge_left = 0
 @export var coyote_time := 0.1
 var coyote_timer := 0.0
 
+var spawn_pos: Vector2
+
 # Per-player Input Map actions (defaults = Player 1).
 @export var action_move_left: StringName = &"p1_move_left"
 @export var action_move_right: StringName = &"p1_move_right"
@@ -28,6 +30,7 @@ enum AttackKind { LIGHT, HEAVY }
 
 ## Brief post-hit lock on left/right only so snappy ground move doesn't eat launch velocity.
 const MOVE_LOCK_ON_HIT := 0.12
+const ATTACK_CHARGE_MAX := 3
 
 var attacking := false
 var attack_startup := false
@@ -40,6 +43,9 @@ var current_attack_kind: AttackKind = AttackKind.LIGHT
 var current_hit: HitData
 var total_damage := 0.0
 var hit_lock := false
+var attack_charge := 0
+signal died
+signal damage_changed
 #endregion
 
 
@@ -48,13 +54,14 @@ var hit_lock := false
 @onready var attack_collider = $AttackArea/AttackAreaCollider
 @onready var sprite = $CharSprite2D
 
-var facing_right := true
+@export var facing_right := true
 var _attack_collider_x := 0.0
 #endregion
 
 
 #region Lifecycle
 func _ready() -> void:
+	spawn_pos = global_position
 	_attack_collider_x = absf(attack_collider.position.x)
 	set_attack_hitbox_active(false)
 	_apply_facing()
@@ -208,6 +215,10 @@ func attack() -> void:
 
 
 func heavy_attack() -> void:
+	if attack_charge < ATTACK_CHARGE_MAX:
+		return
+	attack_charge = maxi(0, attack_charge - 3)
+	print(attack_charge)
 	await start_attack(AttackKind.HEAVY, action_heavy_attack, &"heavy_attack_anim")
 
 
@@ -307,8 +318,12 @@ func notify_attack_landed(victim: Node = null) -> void:
 		return
 	hit_lock = true
 	set_attack_hitbox_active(false)
+	# Lights only — heavies must not refill the heavy meter.
+	if current_hit.damage <= 8.0:
+		jump_charge_left += 1
+		attack_charge += 1
 	if victim.has_method("hurt"):
-		victim.hurt(current_hit, global_position.x)
+		victim.hurt(current_hit, global_position.x, self.velocity.y)
 
 
 func _on_hurt_box_area_entered(area: Area2D) -> void:
@@ -320,7 +335,7 @@ func _on_hurt_box_area_entered(area: Area2D) -> void:
 		attacker.notify_attack_landed(self)
 
 
-func hurt(hit: HitData, attacker_x: float) -> void:
+func hurt(hit: HitData, attacker_x: float, attacker_velocity_y) -> void:
 	if hit == null:
 		return
 	# Cancel any in-flight start_attack() so it cannot resume and fight knockback.
@@ -329,8 +344,15 @@ func hurt(hit: HitData, attacker_x: float) -> void:
 	attack_startup = false
 	_aerial_attack_hover = false
 	set_attack_hitbox_active(false)
-
-	total_damage += hit.damage
+	if hit.damage <= 8:
+		play_hit_blink()
+	elif hit.damage >= 9:
+		game_manager.play_impact()
+	if absf(attacker_velocity_y) > 0:
+		total_damage += hit.damage * 1.5
+	else:
+		total_damage += hit.damage
+	damage_changed.emit(total_damage)
 	var knockback_power: float = (
 		hit.base_knockback + pow(total_damage, 1.5) * 0.25
 	) * hit.attack_power
@@ -341,9 +363,19 @@ func hurt(hit: HitData, attacker_x: float) -> void:
 
 	velocity = Vector2(direction * knockback_power * 0.8, -knockback_power * 1.5)
 	# Brief input lock only - physics still runs so launch X/Y persist.
-	move_lock_timer = MOVE_LOCK_ON_HIT
+	move_lock_timer = MOVE_LOCK_ON_HIT	
 
+func play_hit_blink() -> void:
+	for i in 2:
+		sprite.modulate = Color(1.5, 1.5, 1.5, 0.55)
+		await get_tree().create_timer(0.04).timeout
+		sprite.modulate = Color.WHITE
+		await get_tree().create_timer(0.04).timeout
+	sprite.modulate = Color.WHITE
 
 func die() -> void:
-	get_tree().call_deferred("reload_current_scene")
+	total_damage = 0
+	global_position = spawn_pos
+	died.emit()
+	velocity = Vector2.ZERO
 #endregion
