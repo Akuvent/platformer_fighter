@@ -23,8 +23,8 @@ func _init_health_ui() -> void:
 	var scene := get_tree().current_scene
 	if scene == null:
 		return
-	p1_total_damage = scene.get_node_or_null("UI/P1_Percent") as Label
-	p2_total_damage = scene.get_node_or_null("UI/P2_Percent") as Label
+	p1_total_damage = scene.get_node_or_null("UI/SubViewportContainer/SubViewport/P1_Percent") as Label
+	p2_total_damage = scene.get_node_or_null("UI/SubViewportContainer/SubViewport/P2_Percent") as Label
 	p1_health_anim = scene.get_node_or_null("UI/P1_Health") as AnimatedSprite2D
 	p2_health_anim = scene.get_node_or_null("UI/P2_Health") as AnimatedSprite2D
 	p1_health = P1_MAX_HEALTH
@@ -34,7 +34,6 @@ func _init_health_ui() -> void:
 		p1_health_anim.frame = p1_health
 	if is_instance_valid(p2_health_anim):
 		p2_health_anim.frame = p2_health
-
 	var p1 := scene.get_node_or_null("PlayerBody1")
 	var p2 := scene.get_node_or_null("PlayerBody2")
 	# Fresh players after reload — connect once each.
@@ -48,9 +47,23 @@ func _init_health_ui() -> void:
 		p2.damage_changed.connect(_on_p2_damaged)
 
 func _on_p1_damaged(amount):
+	var t := clampf(amount / 100.0, 0.0, 1.0)
+	var col: Color
+	if t < 0.5:
+		col = Color.WHITE.lerp(Color.YELLOW, t)
+	else:
+		col = Color.YELLOW.lerp(Color.RED, t)
 	p1_total_damage.text = str(amount + 100) + "%"
+	p1_total_damage.label_settings.font_color = col
 func _on_p2_damaged(amount):
+	var t := clampf(amount / 100.0, 0.0, 1.0)
+	var col : Color
+	if t < 0.5:
+		col = Color.WHITE.lerp(Color.YELLOW, t / 0.5)
+	else:
+		col = Color.YELLOW.lerp(Color.RED, (t - 0.5) / 0.5)
 	p2_total_damage.text = str(amount + 100) + "%"
+	p2_total_damage.label_settings.font_color = col
 
 func _on_p1_died() -> void:
 	p1_health = maxi(0, p1_health - 1)

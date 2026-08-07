@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://c66nr15x1046f"
-path="res://.godot/imported/corner.png-071e3785ba3035ffe2b1bff6d08868e8.ctex"
+uid="uid://cglyv3g8fjahx"
+path="res://.godot/imported/p2_corner.png-11a96b68d89278583ecc7775c113745d.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Sprites/UI/corner.png"
-dest_files=["res://.godot/imported/corner.png-071e3785ba3035ffe2b1bff6d08868e8.ctex"]
+source_file="res://Sprites/UI/p2_corner.png"
+dest_files=["res://.godot/imported/p2_corner.png-11a96b68d89278583ecc7775c113745d.ctex"]
 
 [params]
 

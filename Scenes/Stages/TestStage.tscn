@@ -5,6 +5,10 @@
 [ext_resource type="Shader" uid="uid://3yy7jdbo4mgu" path="res://Resources/Combat/impact_outline.gdshader" id="3_dwe7a"]
 [ext_resource type="Script" uid="uid://di5j8jxpi0om6" path="res://Scripts/Stages/world_boundary.gd" id="4_to801"]
 [ext_resource type="Texture2D" uid="uid://cpxmu7qgvr1j8" path="res://Sprites/UI/health_anim.png" id="5_qh2p7"]
+[ext_resource type="Texture2D" uid="uid://sk870ip3fh4h" path="res://Sprites/UI/p1_corner.png" id="6_p1corner"]
+[ext_resource type="FontFile" uid="uid://caos7ybst3ftc" path="res://Fonts/ArchivoBlack-Regular.ttf" id="6_w2rgk"]
+[ext_resource type="Texture2D" uid="uid://cglyv3g8fjahx" path="res://Sprites/UI/p2_corner.png" id="7_p2corner"]
+[ext_resource type="LabelSettings" path="res://Resources/UI/percent_label_settings.tres" id="8_percent_label"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_to801"]
 texture = ExtResource("1_ju2k6")
@@ -375,6 +379,15 @@ size = Vector2(2012, 121)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_exoxh"]
 size = Vector2(125, 675.5)
 
+[sub_resource type="LabelSettings" id="LabelSettings_jhx2l"]
+font = ExtResource("6_w2rgk")
+font_size = 34
+outline_size = 20
+outline_color = Color(0.05, 0.05, 0.05, 1)
+shadow_size = 15
+shadow_color = Color(0, 0.6745098, 0.7529412, 1)
+shadow_offset = Vector2(4, 3.5)
+
 [sub_resource type="AtlasTexture" id="AtlasTexture_m1635"]
 atlas = ExtResource("5_qh2p7")
 region = Rect2(576, 0, 192, 64)
@@ -428,6 +441,8 @@ material = SubResource("ShaderMaterial_ju2k6")
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_top = 1.0
+offset_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
@@ -484,22 +499,64 @@ facing_right = false
 
 [node name="UI" type="CanvasLayer" parent="." unique_id=463322109]
 
-[node name="P1_Percent" type="Label" parent="UI" unique_id=2092608261]
-anchors_preset = -1
-anchor_right = 0.012
-anchor_bottom = 0.044000003
-offset_left = 8.0
-offset_top = 320.0
-offset_right = 42.32
-offset_bottom = 327.16
-text = "100%"
+[node name="SubViewportContainer" type="SubViewportContainer" parent="UI" unique_id=1525148419]
+texture_filter = 2
+offset_right = 640.0
+offset_bottom = 361.0
 
-[node name="P2_Percent" type="Label" parent="UI" unique_id=1445210235]
-offset_left = 592.0
-offset_top = 320.0
-offset_right = 634.0
-offset_bottom = 343.0
+[node name="SubViewport" type="SubViewport" parent="UI/SubViewportContainer" unique_id=375019296]
+transparent_bg = true
+handle_input_locally = false
+gui_snap_controls_to_pixels = false
+size = Vector2i(640, 360)
+render_target_update_mode = 4
+
+[node name="P1_Corner" type="TextureRect" parent="UI/SubViewportContainer/SubViewport" unique_id=1063385400]
+texture_filter = 2
+offset_left = -8.0
+offset_top = 216.0
+offset_right = 152.0
+offset_bottom = 376.0
+mouse_filter = 2
+texture = ExtResource("6_p1corner")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="P1_Percent" type="Label" parent="UI/SubViewportContainer/SubViewport" unique_id=2092608261]
+texture_filter = 2
+offset_left = 8.0
+offset_top = 292.99997
+offset_right = 108.0
+offset_bottom = 344.99997
+rotation = -0.13264503
 text = "100%"
+label_settings = SubResource("LabelSettings_jhx2l")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="P2_Corner" type="TextureRect" parent="UI/SubViewportContainer/SubViewport" unique_id=1215007450]
+texture_filter = 2
+offset_left = 488.0
+offset_top = 216.0
+offset_right = 648.0
+offset_bottom = 376.0
+mouse_filter = 2
+texture = ExtResource("7_p2corner")
+expand_mode = 1
+stretch_mode = 5
+flip_h = true
+
+[node name="P2_Percent" type="Label" parent="UI/SubViewportContainer/SubViewport" unique_id=1445210235]
+texture_filter = 2
+offset_left = 532.00006
+offset_top = 279.99997
+offset_right = 632.00006
+offset_bottom = 331.99997
+rotation = 0.13264503
+text = "100%"
+label_settings = ExtResource("8_percent_label")
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="P2_Health" type="AnimatedSprite2D" parent="UI" unique_id=1345736451]
 texture_filter = 4
