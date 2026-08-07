@@ -218,7 +218,6 @@ func heavy_attack() -> void:
 	if attack_charge < ATTACK_CHARGE_MAX:
 		return
 	attack_charge = maxi(0, attack_charge - 3)
-	print(attack_charge)
 	await start_attack(AttackKind.HEAVY, action_heavy_attack, &"heavy_attack_anim")
 
 
@@ -375,6 +374,7 @@ func play_hit_blink() -> void:
 
 func die() -> void:
 	total_damage = 0
+	damage_changed.emit(total_damage)
 	global_position = spawn_pos
 	died.emit()
 	velocity = Vector2.ZERO
