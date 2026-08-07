@@ -4,6 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://oylclvuboi8r" path="res://Scenes/Characters/Player.tscn" id="2_dwe7a"]
 [ext_resource type="Shader" uid="uid://3yy7jdbo4mgu" path="res://Resources/Combat/impact_outline.gdshader" id="3_dwe7a"]
 [ext_resource type="Script" uid="uid://di5j8jxpi0om6" path="res://Scripts/Stages/world_boundary.gd" id="4_to801"]
+[ext_resource type="Texture2D" uid="uid://cpxmu7qgvr1j8" path="res://Sprites/UI/health_anim.png" id="5_qh2p7"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_to801"]
 texture = ExtResource("1_ju2k6")
@@ -360,8 +361,8 @@ sources/1 = SubResource("TileSetAtlasSource_to801")
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ju2k6"]
 shader = ExtResource("3_dwe7a")
-shader_parameter/threshold = 0.15
-shader_parameter/line_strength = 2.0
+shader_parameter/threshold = 1.0
+shader_parameter/line_strength = 4.0
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_qh2p7"]
 size = Vector2(125, 675.5)
@@ -371,6 +372,42 @@ size = Vector2(2012, 121)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_exoxh"]
 size = Vector2(125, 675.5)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_m1635"]
+atlas = ExtResource("5_qh2p7")
+region = Rect2(576, 0, 192, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_wolni"]
+atlas = ExtResource("5_qh2p7")
+region = Rect2(384, 0, 192, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_yatu4"]
+atlas = ExtResource("5_qh2p7")
+region = Rect2(192, 0, 192, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_6o3mo"]
+atlas = ExtResource("5_qh2p7")
+region = Rect2(0, 0, 192, 64)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_ohxrn"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_m1635")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_wolni")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_yatu4")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_6o3mo")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
 
 [node name="Main" type="Node2D" unique_id=98644828]
 
@@ -431,16 +468,48 @@ script = ExtResource("4_to801")
 position = Vector2(450, 14)
 shape = SubResource("RectangleShape2D_exoxh")
 
-[node name="CharBody2D" parent="." unique_id=1921459648 instance=ExtResource("2_dwe7a")]
+[node name="PlayerBody1" parent="." unique_id=1921459648 instance=ExtResource("2_dwe7a")]
 position = Vector2(-101, -1)
 
-[node name="CharBody2D2" parent="." unique_id=157189824 instance=ExtResource("2_dwe7a")]
+[node name="PlayerBody2" parent="." unique_id=157189824 instance=ExtResource("2_dwe7a")]
 position = Vector2(96, -1)
 action_move_left = &"p2_move_left"
 action_move_right = &"p2_move_right"
 action_jump = &"p2_jump"
 action_attack = &"p2_attack"
 action_heavy_attack = &"p2_heavy_attack"
+facing_right = false
+
+[node name="UI" type="CanvasLayer" parent="." unique_id=463322109]
+
+[node name="P1_Percent" type="Label" parent="UI" unique_id=2092608261]
+anchors_preset = -1
+anchor_right = 0.012
+anchor_bottom = 0.044000003
+offset_left = 8.0
+offset_top = 320.0
+offset_right = 42.32
+offset_bottom = 327.16
+text = "100%"
+
+[node name="P2_Percent" type="Label" parent="UI" unique_id=1445210235]
+offset_left = 592.0
+offset_top = 320.0
+offset_right = 634.0
+offset_bottom = 343.0
+text = "100%"
+
+[node name="P2_Health" type="AnimatedSprite2D" parent="UI" unique_id=1345736451]
+texture_filter = 4
+position = Vector2(592, 16)
+scale = Vector2(0.5, 0.5)
+sprite_frames = SubResource("SpriteFrames_ohxrn")
+
+[node name="P1_Health" type="AnimatedSprite2D" parent="UI" unique_id=451545399]
+texture_filter = 4
+position = Vector2(49, 16)
+scale = Vector2(0.5, 0.5)
+sprite_frames = SubResource("SpriteFrames_ohxrn")
 
 [connection signal="body_entered" from="Boundaries/WorldBoundary" to="Boundaries/WorldBoundary" method="_on_body_entered"]
 [connection signal="body_entered" from="Boundaries/WorldBoundary2" to="Boundaries/WorldBoundary2" method="_on_body_entered"]
