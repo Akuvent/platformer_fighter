@@ -79,6 +79,11 @@ animations = [{
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_gc10f"]
 size = Vector2(25, 16)
 
+[sub_resource type="Gradient" id="Gradient_meglp"]
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_w6cdd"]
+gradient = SubResource("Gradient_meglp")
+
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_w38he"]
 size = Vector2(15, 25)
 
@@ -104,6 +109,12 @@ collision_mask = 8
 [node name="AttackAreaCollider" type="CollisionShape2D" parent="AttackArea" unique_id=1178815787]
 position = Vector2(20.5, 3)
 shape = SubResource("RectangleShape2D_gc10f")
+
+[node name="AttackAreaSprite" type="Sprite2D" parent="AttackArea" unique_id=1080449780]
+visible = false
+position = Vector2(21, 1)
+scale = Vector2(0.09375, 4)
+texture = SubResource("GradientTexture1D_w6cdd")
 
 [node name="HurtBox" type="Area2D" parent="." unique_id=1624866499]
 collision_layer = 8

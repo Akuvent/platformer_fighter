@@ -14,6 +14,10 @@ var jump_charge_left = 0
 @export var coyote_time := 0.1
 var coyote_timer := 0.0
 
+## Seconds between walk footsteps while moving on the ground.
+const FOOTSTEP_INTERVAL := 0.22
+var _footstep_timer := 0.0
+
 var spawn_pos: Vector2
 
 # Per-player Input Map actions (defaults = Player 1).
@@ -30,10 +34,11 @@ enum AttackKind { LIGHT, HEAVY }
 
 ## Brief post-hit lock on left/right only so snappy ground move doesn't eat launch velocity.
 const MOVE_LOCK_ON_HIT := 0.12
-const ATTACK_CHARGE_MAX := 3
+const ATTACK_CHARGE_MAX := 5
 const LIGHT_HITSTOP := 0.1
 const HIT_SPARK := preload("res://Scenes/VFX/HitSpark.tscn")
 
+@onready var attack_sprite := $AttackArea/AttackAreaSprite
 var attacking := false
 var attack_startup := false
 ## True when this swing began airborne - hang in place for startup + active.
@@ -58,6 +63,7 @@ signal damage_changed
 
 @export var facing_right := true
 var _attack_collider_x := 0.0
+var _attack_sprite_x := 0.0
 #endregion
 
 
@@ -65,6 +71,7 @@ var _attack_collider_x := 0.0
 func _ready() -> void:
 	spawn_pos = global_position
 	_attack_collider_x = absf(attack_collider.position.x)
+	_attack_sprite_x = absf(attack_collider.position.x)
 	set_attack_hitbox_active(false)
 	_apply_facing()
 
@@ -83,6 +90,8 @@ func _physics_process(delta) -> void:
 		_physics_free_control(delta)
 
 	move_and_slide()
+
+	_update_foot_sfx(delta)
 
 	# Skip locomotion anims during startup telegraph (sprite is held on frame 0).
 	if not attack_startup or attacking:
@@ -151,15 +160,28 @@ func _handle_jump(delta) -> void:
 		if is_on_floor() or coyote_timer > 0:
 			velocity.y = JUMP_VELOCITY
 			coyote_timer = 0  # Prevents unwanted double jump
+			sfx.jump(false)
 		elif jump_charge_left > 0:
 			velocity.y = JUMP_VELOCITY
 			jump_charge_left -= 1
+			sfx.jump(true)
 			# Spend the air jump for a snappy mid-air redirect without buffing free-fall DI.
 			var direction = Input.get_axis(action_move_left, action_move_right)
 			if direction:
 				velocity.x = direction * AIR_JUMP_X_BOOST
 				facing_right = direction > 0
 				_apply_facing()
+
+
+func _update_foot_sfx(delta: float) -> void:
+	var on_floor := is_on_floor()
+	if not on_floor or attacking or attack_startup or absf(velocity.x) < 10.0:
+		_footstep_timer = 0.0
+		return
+	_footstep_timer -= delta
+	if _footstep_timer <= 0.0:
+		sfx.footstep()
+		_footstep_timer = FOOTSTEP_INTERVAL
 
 
 func _handle_move(delta) -> void:
@@ -189,6 +211,7 @@ func _apply_facing() -> void:
 	# flip_h only mirrors the texture; move the hitbox to match facing.
 	sprite.flip_h = not facing_right
 	attack_collider.position.x = _attack_collider_x if facing_right else -_attack_collider_x
+	attack_sprite.position.x = _attack_sprite_x if facing_right else -_attack_sprite_x
 #endregion
 
 
@@ -253,6 +276,7 @@ func start_attack(kind: AttackKind, action: StringName, anim: StringName) -> voi
 	sprite.frame = 1
 	sprite.pause()
 	_fill_current_hit(kind)
+	sfx.swing(kind == AttackKind.HEAVY)
 	set_attack_hitbox_active(true)
 	await get_tree().create_timer(0.1).timeout
 	if attack_id != _attack_id:
@@ -293,8 +317,8 @@ func set_attack_hitbox_active(state: bool) -> void:
 	# monitoring alone only affects AttackArea detecting others.
 	# Must be deferred: toggling during area_entered is blocked by PhysicsServer2D.
 	attack_area.set_deferred("monitoring", state)
+	attack_sprite.visible = state
 	attack_area.set_deferred("monitorable", state)
-
 
 func _play_attack_startup_blink(kind: AttackKind) -> void:
 	# Light ~0.14s, heavy ~0.24s telegraph before hold-to-release.
@@ -309,7 +333,7 @@ func _play_attack_startup_blink(kind: AttackKind) -> void:
 	sprite.modulate = Color(2, 2, 2)
 	await get_tree().create_timer(attack_ready).timeout
 	sprite.modulate = Color.WHITE
-	# Add ready SFX later in development
+	sfx.attack_ready()
 #endregion
 
 
@@ -322,8 +346,11 @@ func notify_attack_landed(victim: Node = null) -> void:
 	# Lights only — heavies must not refill the heavy meter.
 	if current_hit.damage <= 8.0:
 		jump_charge_left += 1
-		attack_charge += 1
+		attack_charge = clampi( attack_charge + 1, 0, 5)
 		_light_freeze()
+		sfx.light_hit()
+	else:
+		sfx.heavy_hit()
 	if victim.has_method("hurt"):
 		victim.hurt(current_hit, global_position.x, self.velocity.y)
 
@@ -346,6 +373,7 @@ func hurt(hit: HitData, attacker_x: float, attacker_velocity_y) -> void:
 	attack_startup = false
 	_aerial_attack_hover = false
 	set_attack_hitbox_active(false)
+	sfx.hurt()
 	if hit.damage <= 8:
 		play_hit_blink()
 		_light_freeze()
