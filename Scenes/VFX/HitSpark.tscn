@@ -1,0 +1,32 @@
+[gd_scene format=3 uid="uid://y63huft1qnl6"]
+
+[ext_resource type="Script" uid="uid://cp1180itpwj" path="res://Scenes/VFX/hit_spark.gd" id="1_p6fu5"]
+
+[sub_resource type="Gradient" id="Gradient_1ombg"]
+offsets = PackedFloat32Array(0.12650603, 1)
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_p6fu5"]
+gradient = SubResource("Gradient_1ombg")
+width = 6
+height = 6
+fill = 1
+fill_from = Vector2(0.5, 0.4826087)
+fill_to = Vector2(0, 0.99130434)
+
+[node name="HitSpark" type="CPUParticles2D" unique_id=1381318067]
+z_index = -1
+emitting = false
+amount = 25
+texture = SubResource("GradientTexture2D_p6fu5")
+lifetime = 0.09999999999999999
+one_shot = true
+explosiveness = 1.0
+spread = 180.0
+gravity = Vector2(0, 50)
+initial_velocity_min = 100.0
+initial_velocity_max = 200.0
+scale_amount_min = 0.3
+script = ExtResource("1_p6fu5")
+
+[connection signal="finished" from="." to="." method="_on_finished"]

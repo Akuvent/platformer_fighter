@@ -95,6 +95,13 @@ func _reload_stage() -> void:
 	push_error("game_manager: stage failed to reload UI")
 
 
+## Light hit juice (spark / shake / etc.) — fill in as you add FX.
+func play_light_hit_fx(kind) -> void:
+	var scene := get_tree().current_scene
+	var cam := scene.get_node_or_null("Camera2D") as Camera2D
+	cam.add_trauma(0.4, kind)
+
+
 func play_impact() -> void:
 	if _impact_playing:
 		return
@@ -111,8 +118,8 @@ func play_impact() -> void:
 	var base_zoom := Vector2.ONE
 	if cam:
 		base_zoom = cam.zoom
-		cam.zoom = base_zoom * 1.06
-
+		cam.zoom = base_zoom * 2.06
+		cam.add_trauma(0.8, "heavy")
 	Engine.time_scale = IMPACT_TIME_SCALE
 	if mat:
 		mat.set_shader_parameter("style", 1)

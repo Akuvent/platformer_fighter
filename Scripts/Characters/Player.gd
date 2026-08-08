@@ -31,6 +31,8 @@ enum AttackKind { LIGHT, HEAVY }
 ## Brief post-hit lock on left/right only so snappy ground move doesn't eat launch velocity.
 const MOVE_LOCK_ON_HIT := 0.12
 const ATTACK_CHARGE_MAX := 3
+const LIGHT_HITSTOP := 0.1
+const HIT_SPARK := preload("res://Scenes/VFX/HitSpark.tscn")
 
 var attacking := false
 var attack_startup := false
@@ -321,6 +323,7 @@ func notify_attack_landed(victim: Node = null) -> void:
 	if current_hit.damage <= 8.0:
 		jump_charge_left += 1
 		attack_charge += 1
+		_light_freeze()
 	if victim.has_method("hurt"):
 		victim.hurt(current_hit, global_position.x, self.velocity.y)
 
@@ -345,8 +348,15 @@ func hurt(hit: HitData, attacker_x: float, attacker_velocity_y) -> void:
 	set_attack_hitbox_active(false)
 	if hit.damage <= 8:
 		play_hit_blink()
+		_light_freeze()
+		game_manager.play_light_hit_fx("light")
 	elif hit.damage >= 9:
 		game_manager.play_impact()
+	var spark := HIT_SPARK.instantiate()
+	spark.lifetime = LIGHT_HITSTOP * 2
+	get_tree().current_scene.add_child(spark)
+	spark.global_position = $HurtBox/HurtBoxCollision.global_position
+	spark.emitting = true  # only after position
 	if absf(attacker_velocity_y) > 0:
 		total_damage += hit.damage * 1.5
 	else:
@@ -359,7 +369,7 @@ func hurt(hit: HitData, attacker_x: float, attacker_velocity_y) -> void:
 	var direction := signf(global_position.x - attacker_x)
 	if direction == 0.0:
 		direction = 1.0
-
+	velocity = Vector2.ZERO
 	velocity = Vector2(direction * knockback_power * 0.8, -knockback_power * 1.5)
 	# Brief input lock only - physics still runs so launch X/Y persist.
 	move_lock_timer = MOVE_LOCK_ON_HIT	
@@ -379,3 +389,8 @@ func die() -> void:
 	died.emit()
 	velocity = Vector2.ZERO
 #endregion
+
+func _light_freeze():
+	set_physics_process(false)
+	await get_tree().create_timer(LIGHT_HITSTOP, true, false, true).timeout
+	set_physics_process(true)

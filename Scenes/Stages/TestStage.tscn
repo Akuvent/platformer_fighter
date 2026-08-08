@@ -1,5 +1,6 @@
 [gd_scene format=4 uid="uid://beytduhwh3oe2"]
 
+[ext_resource type="Script" uid="uid://b73b6ee1bho2x" path="res://Scripts/UI/camera_shake.gd" id="1_jhx2l"]
 [ext_resource type="Texture2D" uid="uid://d0daxtpm3iwn2" path="res://Sprites/Stages/Spritesheets/spritesheet-tiles-default.png" id="1_ju2k6"]
 [ext_resource type="PackedScene" uid="uid://oylclvuboi8r" path="res://Scenes/Characters/Player.tscn" id="2_dwe7a"]
 [ext_resource type="Shader" uid="uid://3yy7jdbo4mgu" path="res://Resources/Combat/impact_outline.gdshader" id="3_dwe7a"]
@@ -8,7 +9,7 @@
 [ext_resource type="Texture2D" uid="uid://sk870ip3fh4h" path="res://Sprites/UI/p1_corner.png" id="6_p1corner"]
 [ext_resource type="FontFile" uid="uid://caos7ybst3ftc" path="res://Fonts/ArchivoBlack-Regular.ttf" id="6_w2rgk"]
 [ext_resource type="Texture2D" uid="uid://cglyv3g8fjahx" path="res://Sprites/UI/p2_corner.png" id="7_p2corner"]
-[ext_resource type="LabelSettings" path="res://Resources/UI/percent_label_settings.tres" id="8_percent_label"]
+[ext_resource type="LabelSettings" uid="uid://bi3tjerqtr3bw" path="res://Resources/UI/percent_label_settings.tres" id="8_percent_label"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_to801"]
 texture = ExtResource("1_ju2k6")
@@ -427,6 +428,7 @@ animations = [{
 [node name="Main" type="Node2D" unique_id=98644828]
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1286583008]
+script = ExtResource("1_jhx2l")
 
 [node name="TileMapLayer" type="TileMapLayer" parent="." unique_id=708001444]
 scale = Vector2(0.25, 0.25)
